@@ -85,8 +85,8 @@ def create_table_classes_query() ->str:
     index_queries.append(
          "CREATE INDEX IF NOT EXISTS idx_class_school_id  ON classes(school_id)"
     )
-
-    before_insert_function = """                                    #function for before insert trigger,which not allows to insert 2 same class names in one school 
+     #function for before insert trigger,which not allows to insert 2 same class names in one school 
+    before_insert_function = """  
         CREATE OR REPLACE FUNCTION trigger_before_insert()
             RETURNS TRIGGER
             LANGUAGE PLPGSQL
@@ -100,6 +100,7 @@ def create_table_classes_query() ->str:
             IF (SELECT COUNT(*) FROM classes WHERE school_id = new.school_id AND name=NEW.name) >= 1 THEN
                 RAISE EXCEPTION 'This class already exists in this school' USING ERRCODE = 'unique_violation';
                 ROLLBACK;
+            
             END IF;
             RETURN NEW;
 
@@ -157,6 +158,45 @@ def create_table_students_query() -> str:
     """
     
     index_queries.append('CREATE INDEX IF NOT EXISTS idx_name ON students(first_name,second_name)')
+
+
+    function_before_insert = """
+        CREATE OR REPLACE FUNCTION students_before_insert()
+            RETURNS TRIGGER
+            LANGUAGE PLPGSQL
+        AS 
+        $$
+        BEGIN
+
+            IF (SELECT COUNT(*) FROM students WHERE class_id = NEW.class_id) >=34 THEN
+                RAISE EXCEPTION 'One class support`s to 34 student';
+                ROLLBACK;
+
+            
+
+            END IF;
+            RETURN NEW;
+
+
+
+        END;
+        $$;
+
+    """
+
+    functions.append(function_before_insert)
+
+
+
+    trigger_before_insert = """
+        CREATE TRIGGER before_insert_students
+        BEFORE INSERT
+        ON students
+        FOR EACH ROW
+        EXECUTE FUNCTION students_before_insert();
+    """
+
+    triggers.append(trigger_before_insert)
     
 
     return query

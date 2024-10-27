@@ -43,6 +43,18 @@ class AlchSchoolsQueries:
 
 				session.add(schoolOrm)
 				await session.commit()
+	@staticmethod
+	async def get_school_info(school_id:int) -> dict|None:
+		async with db.session_factory() as session:
+
+			query = select(orms.SchoolOrm).where(orms.SchoolOrm.id==school_id).options(joinedload(orms.SchoolOrm.school_classes))
+
+			res = await session.execute(query)
+			result = res.unique().scalars().one()
+			return result
+
+
+		
 		
 class AlchClassesQueries:
 	@staticmethod

@@ -18,6 +18,8 @@ class SchoolOrm(db.Base):
 
 	id:Mapped[int] = mapped_column(primary_key=True,default='schools')
 
+	school_classes:Mapped[list["ClassOrm"]] = relationship()
+
 
 class ClassOrm(db.Base):
 	__tablename__='classes'
