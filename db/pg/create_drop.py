@@ -86,7 +86,7 @@ def create_table_classes_query() ->str:
          "CREATE INDEX IF NOT EXISTS idx_class_school_id  ON classes(school_id)"
     )
 
-    before_insert_function = """
+    before_insert_function = """                                    #function for before insert trigger,which not allows to insert 2 same class names in one school 
         CREATE OR REPLACE FUNCTION trigger_before_insert()
             RETURNS TRIGGER
             LANGUAGE PLPGSQL
@@ -110,7 +110,7 @@ def create_table_classes_query() ->str:
     functions.append(before_insert_function)
 
 
-    trigger_before_insert ="""
+    trigger_before_insert =""" 
         CREATE TRIGGER classes_before_insert
         BEFORE INSERT
         on classes
