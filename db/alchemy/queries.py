@@ -84,42 +84,7 @@ class AlchTeachersQueries:
 	
 
 
-	@staticmethod
-	async def get_teacher_w_rel(teacher_id):
-		"""
-		[
-			{
-				id:1,
-				name:valera,
-				class:{
-					id:1,
-					name:1-A
-					}
-				students:[
-					{id:1,name:anya,class_id:1,birthday:2009-08-10},
-					{id:2,name:anya,class_id:1,birthday:2009-08-10}
-				]
-			},
-			{
-				id:2,
-				name:pisyun,
-				class:{
-					id:2,
-					name:2-A
-					}
-				students:[
-					{id:3,name:dayn,class_id:2,birthday:2009-08-10},
-					{id:4,name:zhopa,class_id:2,birthday:2009-08-10}
-				]
-			},
-
-		]
-		"""
-		with db.sync_session_factory() as session:
-			query = select(orms.TeachersOrm)
-
-			res = session.execute(query)
-			result = res.scalars.all()
+	
 
 
 class AlchAStudentsQueries:
