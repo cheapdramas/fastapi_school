@@ -19,13 +19,9 @@ async def create_school(school_info:models_school.SchoolModel):
     
     return 'no troubles ))'
 
-
-
-
-@router.get('/all_teachers_school')
-async def get_all_teachers_school_route(school_id:int):
-    all_teachers =await SchoolsQueries.get_all_teachers_from_school(school_id=school_id)
-    return all_teachers
+@router.get('/schools_short_info')
+async def schools_short_info():
+    return await AlchSchoolsQueries.all_schools_short_info()
 
 
 @router.get('/school_info')

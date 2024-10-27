@@ -47,12 +47,23 @@ class AlchSchoolsQueries:
 	async def get_school_info(school_id:int) -> dict|None:
 		async with db.session_factory() as session:
 
-			query = select(orms.SchoolOrm).where(orms.SchoolOrm.id==school_id).options(joinedload(orms.SchoolOrm.school_classes))
+			query = select(orms.SchoolOrm).where(orms.SchoolOrm.id==school_id).options(selectinload(orms.SchoolOrm.school_classes))
 
 			res = await session.execute(query)
-			result = res.unique().scalars().one()
-			return result
+			try:
+				result = res.scalars().one()
+				return result
+			except:
+				return None
+			
+	async def all_schools_short_info():
+		async with db.session_factory() as session:
+			db.engine.echo=True
+			query = select(orms.SchoolOrm)
 
+			res = await session.execute(query)
+			result = res.scalars().fetchall()
+			return [{'id':school.id,'short_name':school.short_name}for school in result]
 
 		
 		
@@ -81,8 +92,21 @@ class AlchClassesQueries:
 
 			return result
 
+	@staticmethod
+	async def get_class_info(class_id:int) -> dict|None:
+		async with db.session_factory() as session:
 
+			query = select(orms.ClassOrm).where(orms.ClassOrm.id==class_id).options(joinedload(orms.ClassOrm.teacher),selectinload(orms.ClassOrm.students),joinedload(orms.ClassOrm.school))
 
+			
+			res = await session.execute(query)
+			try:
+				result = res.scalars().one()
+				return result
+			except:
+				return None
+			
+			
 class AlchTeachersQueries:
 	@staticmethod
 	async def add_teacher(**kwargs):
